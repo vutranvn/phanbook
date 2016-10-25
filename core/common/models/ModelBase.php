@@ -264,15 +264,18 @@ class ModelBase extends Model
      * This method prepares the queries to be executed in each list of posts
      * The returned builders are used as base in the search, tagged list and index lists.
      *
-     * @param array  $join  The Model need to join {code} $join = [ 'type'  => 'join', 'model' => 'Phanbook\\Models\\PostsReply', 'on'    => 'r.postsId = p.id', 'alias' => 'r' ]; {/code} {code} $join = [ 'type'  => 'join', 'model' => 'Phanbook\\Models\\PostsReply', 'on'    => 'r.postsId = p.id', 'alias' => 'r' ]; {/code}
-     * {code}
+     * <code>
+     * use 'Phanbook\Models\PostsReply;
+     *
      * $join = [
      *   'type'  => 'join',
-     *   'model' => 'Phanbook\\Models\\PostsReply',
+     *   'model' => PostsReply::class',
      *   'on'    => 'r.postsId = p.id',
      *   'alias' => 'r'
      * ];
-     * {/code}
+     * </code>
+     *
+     * @param array $join  The Model need to join
      * @param string $where The condition you want to get.
      * @param int    $limit The option limit post in a page.
      *

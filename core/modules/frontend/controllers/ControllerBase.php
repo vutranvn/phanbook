@@ -12,18 +12,17 @@
  */
 namespace Phanbook\Frontend\Controllers;
 
-use Phalcon\Mvc\Controller;
-use Phalcon\Mvc\Dispatcher;
-use Phalcon\Db\Adapter\Pdo;
+use Phanbook\Models\Tags;
 use Phanbook\Models\Vote;
 use Phanbook\Models\Users;
 use Phanbook\Models\Karma;
-use Phanbook\Models\Tags;
 use Phanbook\Models\Posts;
+use Phalcon\Mvc\Controller;
+use Phalcon\Mvc\Dispatcher;
 use Phanbook\Models\Comment;
+use Phanbook\Models\ModelBase;
 use Phanbook\Models\PostsReply;
 use Phanbook\Frontend\Forms\CommentForm;
-use Phanbook\Models\ModelBase;
 use Phanbook\Models\ActivityNotifications;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 use Phalcon\Paginator\Adapter\NativeArray  as PaginatorNativeArray;
@@ -66,7 +65,7 @@ class ControllerBase extends Controller
     public $perPage = 30;
 
     /**
-     * Check if we need to throw a json respone. For ajax calls.
+     * Check if we need to throw a json response. For ajax calls.
      *
      * @return bool
      */
@@ -94,7 +93,7 @@ class ControllerBase extends Controller
      */
     public function beforeExecuteRoute(Dispatcher $dispatcher)
     {
-        // @todo something
+        // @TODO: something
         if ($this->auth->hasRememberMe() && !$this->request->isPost()) {
             $this->auth->loginWithRememberMe();
         }
@@ -358,6 +357,7 @@ class ControllerBase extends Controller
         echo 0;
         return 0;
     }
+
     /**
      * Comments are temporary "Post-It" notes left on a question or answer.
      * They can be up-voted (but not down-voted) and flagged, but do not generate reputation.
@@ -417,11 +417,12 @@ class ControllerBase extends Controller
 
         return in_array($extension, $allowedTypes);
     }
+
     /**
      * Create a paginator default use adapter PaginatorQueryBuilder,
      * show 30 rows by page starting from $page
      *
-     * @return array the conatainer object...
+     * @return array
      */
     public function paginator($query, $adapter = null)
     {
@@ -448,10 +449,12 @@ class ControllerBase extends Controller
         }
         return $paginator;
     }
+
     public function indexRedirect()
     {
         return $this->response->redirect();
     }
+
     public function currentRedirect()
     {
         if ($url = $this->cookies->get('urlCurrent')->getValue()) {
@@ -460,6 +463,7 @@ class ControllerBase extends Controller
         }
         return $this->response->redirect($this->request->getHTTPReferer(), true);
     }
+
     /**
      * Set karma Voting someone else's post (positive or negative) on posts reply.
      *
@@ -511,11 +515,12 @@ class ControllerBase extends Controller
     }
 
     /**
-     * Set karam Voting someone else's post (positive or negative) on posts
+     * Set karma Voting someone else's post (positive or negative) on posts
      *
      * @param string $way  positive or negative
      * @param object $user Phanbook\Models\Users
      * @param object $post Phanbook\Models\Posts
+     * @return array
      */
     public function setPointPost($way, $user, $post)
     {
@@ -543,6 +548,7 @@ class ControllerBase extends Controller
             $this->saveLoger('todo setPointReply');
         }
     }
+
     /**
      * These is it will save ActivityNotifications when the user have comment,
      * vote, etc to post or post reply, which just display for user
@@ -554,11 +560,11 @@ class ControllerBase extends Controller
     public function setActivityNotifications($user, $object)
     {
         $activity = new ActivityNotifications();
-        //set user recive a notification when it have a post comment or reply
+        //set user receive a notification when it have a post comment or reply
         $activity->setUsersOriginId($user->getId());
 
         //If is posts, it will use when user vote post
-        if (method_exists($object, '_isPost')) {
+        if (method_exists($object, 'isPost')) {
             $activity->setUsersId($object->getUsersId());
             $activity->setPostsId($object->getId());
             $activity->setPostsReplyId(null);
@@ -579,6 +585,7 @@ class ControllerBase extends Controller
             $this->saveLoger('Save fail, I am on here' . __LINE__);
         }
     }
+
     /**
      * The function sending log for nginx or apache, it will to analytic later
      *
@@ -586,7 +593,6 @@ class ControllerBase extends Controller
      */
     public function saveLoger($e)
     {
-
         $logger = $this->logger;
         if (is_object($e)) {
             $logger->error($e[0]->getMessage());
