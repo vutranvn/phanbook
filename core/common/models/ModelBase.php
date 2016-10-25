@@ -40,11 +40,10 @@ class ModelBase extends Model
      * Toggle object status. 0 or 1
      *
      * @param $id - id of object to toggle
-     * @param string  $method - column name for toggleing - status by default
+     * @param string  $column - column name for toggleing - status by default
      */
     public function toggleObject($id, $column = 'status')
     {
-
     }
 
     public static function getBuilder()
@@ -71,8 +70,8 @@ class ModelBase extends Model
      */
     public function deleteObject($ids, $model = null)
     {
-
     }
+
     /**
      * @param $objectId
      * @param $object
@@ -85,7 +84,6 @@ class ModelBase extends Model
             'SELECT COALESCE(SUM(positive),0) AS positive, COALESCE(SUM(negative),0) AS negative FROM ' . __NAMESPACE__ . '\Vote WHERE objectId = :objectId: AND object = :object:',
             ['objectId' => $objectId, 'object' => $object]
         )->getFirst()->toArray();
-
     }
 
     public function getPostsWithVotes($postId = false)
@@ -105,8 +103,9 @@ class ModelBase extends Model
         $pdoResult  = $postsReply->getReadConnection()->query($sql, $params);
         return (new Resultset(null, $postsReply, $pdoResult));
     }
+
     /**
-     * @param $obJectid
+     * @param $objectId
      * @param $object
      *
      * @return mixed
@@ -124,6 +123,7 @@ class ModelBase extends Model
 
         return $resultset;
     }
+
     /**
      * Set Notify users that always want notifications via Queueing jobs
      *
@@ -149,6 +149,7 @@ class ModelBase extends Model
         }
         return $notification->getId();
     }
+
     /**
      * Set Notify users that always want notifications just display notification on website
      * @param integer $userId       user want notification
@@ -168,6 +169,7 @@ class ModelBase extends Model
         $activity->setType($type);
         $activity->save();
     }
+
     /**
      * The function sending log for nginx or apache, it will to analytic later
      *
@@ -189,6 +191,7 @@ class ModelBase extends Model
             $logger->error($e);
         }
     }
+
     /**
      * Get data via method Query Builder Phalcon
      * {code}
@@ -219,7 +222,7 @@ class ModelBase extends Model
      * {/code}
      *
      * @param  array
-     * @return Phalcon\Mvc\Model\Query\BuilderInterface
+     * @return \Phalcon\Mvc\Model\Query\BuilderInterface
      */
     public static function modelQuery($query)
     {
@@ -249,6 +252,7 @@ class ModelBase extends Model
         }
         return $builder;
     }
+
     /**
      * This method prepares the queries to be executed in each list of posts
      * The returned builders are used as base in the search, tagged list and index lists.
@@ -297,6 +301,7 @@ class ModelBase extends Model
 
         return array($itemBuilder, $totalBuilder);
     }
+
     /**
      * Hook Phalcon PHP
      */
@@ -305,6 +310,7 @@ class ModelBase extends Model
         $this->addBehavior(new ModelBlameable());
         $this->keepSnapshots(true);
     }
+
     /**
      * @return bool|string
      */

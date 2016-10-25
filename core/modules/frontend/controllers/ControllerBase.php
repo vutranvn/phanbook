@@ -35,7 +35,6 @@ use Phalcon\Paginator\Adapter\NativeArray  as PaginatorNativeArray;
  */
 class ControllerBase extends Controller
 {
-
     /**
      * @var array
      */
@@ -462,11 +461,12 @@ class ControllerBase extends Controller
         return $this->response->redirect($this->request->getHTTPReferer(), true);
     }
     /**
-     * Set karam Voting someone else's post (positive or negative) on posts reply
+     * Set karma Voting someone else's post (positive or negative) on posts reply.
      *
-     * @param string $way       [description]
-     * @param object $user      Phanbook\Models\Users
-     * @param object $postReply Phanbook\Models\PostsReply
+     * @param string $way
+     * @param \Phanbook\Models\Users $user
+     * @param \Phanbook\Models\PostsReply $postReply
+     * @return array
      */
     public function setPointReply($way, $user, $postReply)
     {
@@ -476,7 +476,8 @@ class ControllerBase extends Controller
                     $karamCount = intval(abs($user->getKarma() - $postReply->user->getKarma()) / 1000);
                     $points = Karma::VOTE_UP_ON_MY_REPLY_ON_MY_POST + $karamCount;
                 } else {
-                    $points = (Karma::VOTE_UP_ON_MY_REPLY + intval(abs($user->getKarma() - $postReply->user->getKarma()) / 1000));
+                    $points = Karma::VOTE_UP_ON_MY_REPLY;
+                    $points += intval(abs($user->getKarma() - $postReply->user->getKarma()) / 1000);
                 }
                 $postReply->user->increaseKarma($points);
                 $user->increaseKarma(Karma::VOTE_UP_ON_SOMEONE_ELSE_REPLY);
@@ -485,7 +486,8 @@ class ControllerBase extends Controller
                     $karamCount = intval(abs($user->getKarma() - $postReply->user->getKarma()) / 1000);
                     $points = Karma::VOTE_DOWN_ON_MY_REPLY_ON_MY_POST + $karamCount;
                 } else {
-                    $points = (Karma::VOTE_DOWN_ON_MY_REPLY + intval(abs($user->getKarma() - $postReply->user->getKarma()) / 1000));
+                    $points = Karma::VOTE_DOWN_ON_MY_REPLY;
+                    $points += intval(abs($user->getKarma() - $postReply->user->getKarma()) / 1000);
                 }
                 $postReply->user->decreaseKarma($points);
                 $user->decreaseKarma(Karma::VOTE_DOWN_ON_SOMEONE_ELSE_REPLY);
@@ -507,6 +509,7 @@ class ControllerBase extends Controller
             error_log('todo setPointReply');
         }
     }
+
     /**
      * Set karam Voting someone else's post (positive or negative) on posts
      *
