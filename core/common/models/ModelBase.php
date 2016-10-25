@@ -12,10 +12,10 @@
  */
 namespace Phanbook\Models;
 
-use Phalcon\DI\FactoryDefault;
 use Phalcon\Mvc\Model;
-use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phanbook\Tools\ZFunction;
+use Phalcon\DI\FactoryDefault;
+use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 use Phanbook\Models\Behavior\Blameable as ModelBlameable;
 
 /**
@@ -26,8 +26,8 @@ use Phanbook\Models\Behavior\Blameable as ModelBlameable;
  */
 class ModelBase extends Model
 {
-    const OBJECT_POSTS       = 'posts';
-    const OBJECT_COMMENTS    = 'comments';
+    const OBJECT_POSTS = 'posts';
+    const OBJECT_COMMENTS = 'comments';
     const OBJECT_POSTS_REPLIES = 'postsReplies';
 
     /**
@@ -40,7 +40,7 @@ class ModelBase extends Model
      * Toggle object status. 0 or 1
      *
      * @param $id - id of object to toggle
-     * @param string  $column - column name for toggleing - status by default
+     * @param string  $column - column name for toggling - status by default
      */
     public function toggleObject($id, $column = 'status')
     {
@@ -63,8 +63,8 @@ class ModelBase extends Model
     /**
      * Generic method for deleting one or more rows based on primary key id and classname
      *
-     * @param $ids   - array|int with object id
-     * @param null                             $model - full class name. if null get classname automaticaly
+     * @param array|int $ids with object id
+     * @param null  $model full class name. if null get classname automatically
      *
      * @return bool|void
      */
@@ -73,17 +73,25 @@ class ModelBase extends Model
     }
 
     /**
-     * @param $objectId
-     * @param $object
+     * @param int $objectId
+     * @param string $object
      *
      * @return mixed
      */
     public function getVotes($objectId, $object)
     {
-        return $this->getModelsManager()->executeQuery(
-            'SELECT COALESCE(SUM(positive),0) AS positive, COALESCE(SUM(negative),0) AS negative FROM ' . __NAMESPACE__ . '\Vote WHERE objectId = :objectId: AND object = :object:',
-            ['objectId' => $objectId, 'object' => $object]
-        )->getFirst()->toArray();
+        $sql = [
+            'SELECT COALESCE(SUM(positive),0) AS positive, ',
+            'COALESCE(SUM(negative),0) AS negative ',
+            'FROM ' . Vote::class,
+            'WHERE objectId = :objectId: AND object = :object:',
+        ];
+
+        return $this
+            ->getModelsManager()
+            ->executeQuery(implode('', $sql), ['objectId' => $objectId, 'object' => $object])
+            ->getFirst()
+            ->toArray();
     }
 
     public function getPostsWithVotes($postId = false)
@@ -132,7 +140,7 @@ class ModelBase extends Model
      * @param integer $postReplyId [description]
      * @param string  $type        Such as Comment, reply...
      *
-     * @return integet|bool
+     * @return int|bool
      */
     public function setNotification($userId, $postId, $postReplyId, $type)
     {
@@ -156,7 +164,7 @@ class ModelBase extends Model
      * @param integer $postId       [description]
      * @param integer $postReplyId  [description]
      * @param string  $type         such as Comment, reply...
-     * @param integer $userOriginId the usesr id post question
+     * @param integer $userOriginId the user id post question
      */
     public function setActivityNotifications($userId, $postId, $postReplyId, $userOriginId, $type)
     {
@@ -177,7 +185,6 @@ class ModelBase extends Model
      */
     public function saveLoger($e)
     {
-
         $logger = $this->getDI()->getLogger();
         if (is_object($e)) {
             $logger->error($e[0]->getMessage());
@@ -280,8 +287,9 @@ class ModelBase extends Model
          * @var \Phalcon\Mvc\Model\Query\BuilderInterface $itemBuilder
          */
         $itemBuilder = self::getBuilder()
-            ->from(['p' => 'Phanbook\Models\Posts'])
+            ->from(['p' => Posts::class])
             ->orderBy('p.sticked DESC, p.createdAt DESC');
+
         if (isset($join) && is_array($join)) {
             $type = (string) $join['type'];
             $itemBuilder->$type($modelNamespace . $join['model'], $join['on'], $join['alias']);
@@ -325,8 +333,8 @@ class ModelBase extends Model
     public static function getObjectsWithLabels()
     {
         return [
-            self::OBJECT_POSTS      => t('Posts'),
-            self::OBJECT_COMMENTS    => t('Comments'),
+            self::OBJECT_POSTS => t('Posts'),
+            self::OBJECT_COMMENTS => t('Comments'),
             self::OBJECT_POSTS_REPLIES => t('Posts Replies')
         ];
     }
